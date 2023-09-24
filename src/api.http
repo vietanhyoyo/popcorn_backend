@@ -1,0 +1,68 @@
+GET http://localhost:5000/home
+Authorization: Beaer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbmgiLCJpYXQiOjE2NjA0NjIzNTEsImV4cCI6MTY2MDQ2MjM3MX0.e9yo1xJbLoJuMxgD70kR4Ijcqds1VIIGYPJ3DzT-ZHY
+
+###
+POST http://localhost:5000/author/login
+Content-Type: application/json
+
+{
+    "username": "vanh",
+    "password": "123456"
+}
+
+###
+POST http://localhost:5000/create-account
+
+###
+POST http://localhost:5000/create-student
+
+###
+POST http://localhost:5000/author/refresh-token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmY3YTI3OGYxNDI5YTNjYWI3YTQzMmYiLCJ1c2VybmFtZSI6InZhbmgiLCJyb2xlIjowLCJpYXQiOjE2NjM1NzI2MTYsImV4cCI6MTY2MzYxNTgxNn0.MiYLkATUbshPVr5qkN4g4uuO62yEGvRimU01m5BoYnc"
+}
+
+###
+POST http://localhost:5000/create-grade
+
+###
+POST http://localhost:5000/create-school-year
+
+###
+POST http://localhost:5000/create-class
+
+###
+GET http://localhost:5000/class/school-year
+Authorization: Beaer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbmgiLCJpYXQiOjE2NjA0NjIzOTIsImV4cCI6MTY2MDQ2MjQxMn0.AU7h1nP1r3wzlifJWFgmvfEHvCT4H-Q3uaYZpGTnqw4
+
+###
+POST http://localhost:5000/class/delete-school-year
+Authorization: Beaer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbmgiLCJyb2xlIjowLCJpYXQiOjE2NjA1NjgwMDEsImV4cCI6MTY2MDU2ODAyMX0.HvhHueTO0_oAHiXbf8Hboo6_uVBzprv2C6Ztw2-uCaE
+
+{
+    "id": "62fa415f8e5ff5e8c0d77e5d"
+}
+ 
+###
+POST http://localhost:5000/create-subject
+Content-Type: application/json
+
+{
+    "name": "Tập viết"
+}
+
+###
+POST http://localhost:5000/create-week-semester-one
+Content-Type: application/json
+
+{}
+
+###
+POST http://localhost:5000/create-week-semester-two
+Content-Type: application/json
+
+{}
+###
+GET http://localhost:5000/management/add
