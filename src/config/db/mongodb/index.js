@@ -1,15 +1,15 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
 async function connect() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/popcorndatabase');
-    console.log("Connect successfully");
+    await mongoose.connect('mongodb://localhost:27017/popcorndatabase') /// url connetion
+    console.log('Connect successfully')
   } catch (error) {
-    console.log("Connect failure!!!");
+    console.log('Connect failure!!!')
   }
 }
 
-module.exports = { connect };
+module.exports = { connect }
 
 //old
 // await mongoose.connect('mongodb://localhost:27017/edu_database');

@@ -155,7 +155,7 @@ class ConvertController {
             id: item.id,
             name: item.name,
             slug: item.slug,
-            episode_id: item.episode_id,
+            episode_id: item.episodes_id,
             description: item.description,
             artist: item.artist,
             itune_link: item.itune_link,
