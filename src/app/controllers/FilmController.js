@@ -60,6 +60,28 @@ class FilmController {
       res.status(500).send('Lỗi khi truy vấn dữ liệu')
     }
   }
+
+  async getFilmByID(req, res) {
+    const id = req.query.id
+
+    if (!id) {
+      return res.status(400).send('Id không được bỏ trống')
+    }
+
+    try {
+      const film = await Film.findById(id).exec()
+
+      if (!film) {
+        return res.status(404).send('Không tìm thấy bộ phim với slug tương ứng')
+      }
+
+      // Trả về thông tin của bộ phim
+      res.send(film)
+    } catch (err) {
+      console.error('Lỗi khi tìm kiếm bộ phim:', err)
+      res.status(500).send('Lỗi khi truy vấn dữ liệu')
+    }
+  }
 }
 
 module.exports = new FilmController()
