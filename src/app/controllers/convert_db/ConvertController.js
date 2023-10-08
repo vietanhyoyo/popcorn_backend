@@ -14,7 +14,7 @@ class ConvertController {
 
       try {
         const insertPromises = result.map(async (item) => {
-          const newItem = { id: item.id, name: item.name }
+          const newItem = { id: item.id.toString(), name: item.name }
           // Sử dụng async/await để chờ việc lưu vào MongoDB hoàn thành
           return Type.create(newItem)
         })
@@ -42,7 +42,7 @@ class ConvertController {
         const insertPromises = result.map(async (item) => {
 
           const newItem = {
-            id: item.id,
+            id: item.id.toString(),
             name: item.name,
             slug: item.slug,
             thumbnail: item.thumbnail,
@@ -84,12 +84,12 @@ class ConvertController {
         const insertPromises = result.map(async (item) => {
 
           const newItem = {
-            id: item.id,
+            id: item.id.toString(),
             name: item.name,
             slug: item.slug,
             description: item.description,
             release_date: item.release_date,
-            season_id: item.season_id,
+            season_id: item.season_id.toString(),
             code: item.code,
           }
           // Sử dụng async/await để chờ việc lưu vào MongoDB hoàn thành
@@ -119,10 +119,10 @@ class ConvertController {
         const insertPromises = result.map(async (item) => {
 
           const newItem = {
-            id: item.id,
+            id: item.id.toString(),
             name: item.name,
             slug: item.slug,
-            film_id: item.playlist_id,
+            film_id: item.playlist_id.toString(),
             release_date: item.release_date,
           }
           // Sử dụng async/await để chờ việc lưu vào MongoDB hoàn thành
@@ -152,10 +152,10 @@ class ConvertController {
         const insertPromises = result.map(async (item) => {
 
           const newItem = {
-            id: item.id,
+            id: item.id.toString(),
             name: item.name,
             slug: item.slug,
-            episode_id: item.episodes_id,
+            episode_id: item.episodes_id != null ? item.episodes_id.toString() : item.episodes_id,
             description: item.description,
             artist: item.artist,
             itune_link: item.itune_link,
@@ -163,7 +163,7 @@ class ConvertController {
             apple_link: item.apple_link,
             spotify_link: item.spotify_link,
             youtube_link: item.youtube_link,
-            film_id: item.playlist_id,
+            film_id: item.playlist_id.toString(),
             is_play: item.isPlay.readUInt8(0),
             sort: item.sort
           }

@@ -48,6 +48,31 @@ class SoundTrackController {
       res.status(500).send('Lỗi khi lấy dữ liệu SoundTrack')
     }
   }
+
+  async updateSoundTrackById(req, res) {
+    const soundtrackId = req.params.id; // Lấy ID của soundtrack từ URL
+    const updatedSoundtrackData = req.body; // Dữ liệu cập nhật từ request body
+  
+    try {
+      // Tìm soundtrack dựa vào ID
+      const soundtrack = await SoundTrack.findById(soundtrackId);
+  
+      if (!soundtrack) {
+        return res.status(404).json({ message: 'Không tìm thấy soundtrack' });
+      }
+  
+      // Cập nhật thông tin của soundtrack với dữ liệu mới
+      Object.assign(soundtrack, updatedSoundtrackData);
+  
+      // Lưu soundtrack đã cập nhật vào cơ sở dữ liệu
+      const updatedSoundtrack = await soundtrack.save();
+  
+      res.json(updatedSoundtrack);
+    } catch (error) {
+      console.error('Lỗi khi cập nhật soundtrack:', error);
+      res.status(500).json({ message: 'Lỗi khi cập nhật soundtrack' });
+    }
+  }
 }
 
 module.exports = new SoundTrackController()
