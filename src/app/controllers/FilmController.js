@@ -227,8 +227,16 @@ class FilmController {
     const filmData = req.body // Dữ liệu bộ phim từ request body
 
     try {
-      const totalDataCount = await Film.countDocuments({})
-      const addData = { ...filmData, id: totalDataCount.toString() }
+      // Sắp xếp các bản ghi theo trường id giảm dần và lấy ra bản ghi có id lớn nhất
+      var filmWithMaxId = await Film.findOne().sort({ id: -1 })
+
+      if (!filmWithMaxId) {
+        filmWithMaxId = 0
+      } else {
+        filmWithMaxId = filmWithMaxId.id + 1
+      }
+
+      const addData = { ...filmData, id: filmWithMaxId }
       // Tạo một bộ phim mới bằng dữ liệu từ request
       const newFilm = new Film(addData)
 
