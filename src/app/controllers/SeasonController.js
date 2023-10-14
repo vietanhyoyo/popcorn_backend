@@ -1,5 +1,7 @@
 const Season = require('../models/Season')
 const Film = require('../models/Film')
+const Episode = require('../models/Episode')
+const episodeController = require('./EpisodeController')
 
 class SeasonController {
   async getSeasons(req, res) {
@@ -84,6 +86,39 @@ class SeasonController {
     } catch (error) {
       console.error('Lỗi khi thêm Season:', error)
       res.status(500).json({ message: 'Lỗi khi thêm Season' })
+    }
+  }
+
+  async deleteSeason(req, res) {
+    const seasonId = req.params.id // Lấy ID của Season từ URL
+
+    try {
+      // Tìm Season dựa vào ID
+      const season = await Season.findById(seasonId)
+
+      if (!season) {
+        return res.status(404).json({ message: 'Không tìm thấy Season' })
+      }
+
+      // Xóa các Episode có season_id tương ứng với ID của Season
+      const episodes = await Episode.find({ season_id: season.id })
+      console.log(episodes);
+      for (var epi of episodes) {
+        console.log(epi)
+        const result = await episodeController.deleteEpisodeAndSoundTrack(epi._id)
+        if(result.error){
+          res.status(404).json({ message: result.message })
+          return;
+        }
+      }
+
+      // Xóa Season khỏi cơ sở dữ liệu
+      await season.remove()
+
+      res.json({ message: 'Season và các Episode đã được xóa thành công' })
+    } catch (error) {
+      console.error('Lỗi khi xóa Season và các Episode:', error)
+      res.status(500).json({ message: 'Lỗi khi xóa Season và các Episode' })
     }
   }
 }

@@ -103,6 +103,27 @@ class SoundTrackController {
       res.status(500).json({ message: 'Lỗi khi thêm SoundTrack' })
     }
   }
+
+  async deleteSoundTrack(req, res) {
+    const soundtrackId = req.params.id // Lấy ID của SoundTrack từ URL
+
+    try {
+      // Tìm SoundTrack dựa vào ID
+      const soundtrack = await SoundTrack.findById(soundtrackId)
+
+      if (!soundtrack) {
+        return res.status(404).json({ message: 'Không tìm thấy SoundTrack' })
+      }
+
+      // Xóa SoundTrack khỏi cơ sở dữ liệu
+      await soundtrack.remove()
+
+      res.json({ message: 'SoundTrack đã được xóa thành công' })
+    } catch (error) {
+      console.error('Lỗi khi xóa SoundTrack:', error)
+      res.status(500).json({ message: 'Lỗi khi xóa SoundTrack' })
+    }
+  }
 }
 
 module.exports = new SoundTrackController()

@@ -1,5 +1,6 @@
 const Season = require('../models/Season')
 const Episode = require('../models/Episode')
+const SoundTrack = require('../models/SoundTrack')
 const Film = require('../models/Film')
 
 class EpisodeController {
@@ -54,59 +55,90 @@ class EpisodeController {
   }
 
   async updateEpisode(req, res) {
-    const episodeId = req.params.id; // Lấy ID của Episode từ URL
-    const updatedEpisodeData = req.body; // Dữ liệu cập nhật từ request body
-  
+    const episodeId = req.params.id // Lấy ID của Episode từ URL
+    const updatedEpisodeData = req.body // Dữ liệu cập nhật từ request body
+
     try {
       // Tìm Episode dựa vào ID
-      const episode = await Episode.findById(episodeId);
-  
+      const episode = await Episode.findById(episodeId)
+
       if (!episode) {
-        return res.status(404).json({ message: 'Không tìm thấy Episode' });
+        return res.status(404).json({ message: 'Không tìm thấy Episode' })
       }
-  
+
       // Cập nhật thông tin của Episode với dữ liệu mới
-      Object.assign(episode, updatedEpisodeData);
-  
+      Object.assign(episode, updatedEpisodeData)
+
       // Lưu Episode đã cập nhật vào cơ sở dữ liệu
-      const updatedEpisode = await episode.save();
-  
-      res.json(updatedEpisode);
+      const updatedEpisode = await episode.save()
+
+      res.json(updatedEpisode)
     } catch (error) {
-      console.error('Lỗi khi cập nhật Episode:', error);
-      res.status(500).json({ message: 'Lỗi khi cập nhật Episode' });
+      console.error('Lỗi khi cập nhật Episode:', error)
+      res.status(500).json({ message: 'Lỗi khi cập nhật Episode' })
     }
   }
 
   async addEpisode(req, res) {
-    const episodeData = req.body; // Dữ liệu Episode từ request body
-  
+    const episodeData = req.body // Dữ liệu Episode từ request body
+
     try {
       // Sắp xếp các bản ghi theo trường id giảm dần và lấy ra bản ghi có id lớn nhất
-      const maxIdEpisode = await Episode.findOne().sort({ id: -1 });
-  
-      let newIdEpisode = 1; // Giá trị ID mặc định nếu không có bản ghi nào trong cơ sở dữ liệu
-  
+      const maxIdEpisode = await Episode.findOne().sort({ id: -1 })
+
+      let newIdEpisode = 1 // Giá trị ID mặc định nếu không có bản ghi nào trong cơ sở dữ liệu
+
       if (maxIdEpisode) {
-        newIdEpisode = maxIdEpisode.id + 1;
+        newIdEpisode = maxIdEpisode.id + 1
       }
-  
+
       const newEpisodeData = {
         ...episodeData,
         id: newIdEpisode
-      };
-  
+      }
+
       // Tạo một Episode mới bằng dữ liệu từ request
-      const newEpisode = new Episode(newEpisodeData);
-  
+      const newEpisode = new Episode(newEpisodeData)
+
       // Lưu Episode mới vào cơ sở dữ liệu
-      const savedEpisode = await newEpisode.save();
-  
-      res.status(201).json(savedEpisode); // Trả về thông tin Episode đã thêm
+      const savedEpisode = await newEpisode.save()
+
+      res.status(201).json(savedEpisode) // Trả về thông tin Episode đã thêm
     } catch (error) {
-      console.error('Lỗi khi thêm Episode:', error);
-      res.status(500).json({ message: 'Lỗi khi thêm Episode' });
+      console.error('Lỗi khi thêm Episode:', error)
+      res.status(500).json({ message: 'Lỗi khi thêm Episode' })
     }
+  }
+
+  async deleteEpisode(req, res) {
+    const episodeId = req.params.id // Lấy ID của Episode từ URL
+
+    try {
+      // xóa episode và soundtrack liên quan
+      await new EpisodeController().deleteEpisodeAndSoundTrack(episodeId)
+
+      res.json({ message: 'Episode và các SoundTrack đã được xóa thành công' })
+    } catch (error) {
+      console.error('Lỗi khi xóa Episode và các SoundTrack:', error)
+      res.status(500).json({ message: 'Lỗi khi xóa Episode và các SoundTrack' })
+    }
+  }
+
+  async deleteEpisodeAndSoundTrack(episode_id) {
+    // Tìm Episode dựa vào ID
+    const episode = await Episode.findById(episode_id)
+
+    if (!episode) {
+      return { message: 'Không tìm thấy Episode', error: true }
+    }
+
+    // Xóa các SoundTrack có episode_id tương ứng với ID của Episode
+    await SoundTrack.deleteMany({ episode_id: episode.id })
+
+    // Xóa Episode khỏi cơ sở dữ liệu
+    await episode.remove()
+
+    return { message: 'Đã xóa episode và soundtrackc', error: false }
   }
 }
 
