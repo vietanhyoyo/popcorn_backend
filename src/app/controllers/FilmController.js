@@ -6,19 +6,28 @@ perPage = 20 // Số lượng mục trên mỗi trang
 class FilmController {
   async getFilmList(req, res) {
     const searchTerm = req.query.name
+    const typeFilter = req.query.type;
     // Mặc định, nếu không có giá trị cho 'page' thì sẽ sử dụng trang 1
     const page = parseInt(req.query.page) || 1
 
     try {
+      const filter = {
+        type: { $ne: 3 }
+      };
+  
+      // Nếu giá trị 'type' được cung cấp, thêm điều kiện lọc
+      if (typeFilter && typeFilter != '') {
+        filter.type = typeFilter;
+      }
       // Tính toán tổng số dữ liệu
       var totalDataCount
       if (searchTerm && searchTerm != '') {
         totalDataCount = await Film.countDocuments({
           name: { $regex: searchTerm, $options: 'i' },
-          type: { $ne: 3 }
+          ...filter
         })
       } else {
-        totalDataCount = await Film.countDocuments({ type: { $ne: 3 } })
+        totalDataCount = await Film.countDocuments(filter)
       }
 
       // Tính toán tổng số trang
@@ -35,10 +44,10 @@ class FilmController {
             $regex: searchTerm,
             $options: 'i'
           },
-          type: { $ne: 3 }
+          ...filter
         })
       } else {
-        films = await Film.find({ type: { $ne: 3 } })
+        films = await Film.find(filter)
           .skip((page - 1) * perPage)
           .limit(perPage)
       }
