@@ -1,23 +1,25 @@
 const Film = require('../models/Film')
 const SoundTrack = require('../models/SoundTrack')
+const Season = require('../models/Season')
+const seasonController = require('./SeasonController')
 
 perPage = 20 // Số lượng mục trên mỗi trang
 
 class FilmController {
   async getFilmList(req, res) {
     const searchTerm = req.query.name
-    const typeFilter = req.query.type;
+    const typeFilter = req.query.type
     // Mặc định, nếu không có giá trị cho 'page' thì sẽ sử dụng trang 1
     const page = parseInt(req.query.page) || 1
 
     try {
       const filter = {
         type: { $ne: 3 }
-      };
-  
+      }
+
       // Nếu giá trị 'type' được cung cấp, thêm điều kiện lọc
       if (typeFilter && typeFilter != '') {
-        filter.type = typeFilter;
+        filter.type = typeFilter
       }
       // Tính toán tổng số dữ liệu
       var totalDataCount
@@ -256,6 +258,38 @@ class FilmController {
     } catch (error) {
       console.error('Lỗi khi thêm bộ phim:', error)
       res.status(500).json({ message: 'Lỗi khi thêm bộ phim' })
+    }
+  }
+
+  async deleteFilm(req, res) {
+    const filmId = req.params.id // Lấy ID từ URL
+
+    try {
+      // Tìm Film dựa vào ID
+      const film = await Film.findById(filmId)
+
+      if (!film) {
+        return res.status(404).json({ message: 'Không tìm thấy Film' })
+      }
+
+      if (film.type == 1) {
+        const seasons = await Season.find({ film_id: film.id })
+        for (var sea of seasons) {
+          const result = await seasonController.deleteSeasonClean(sea._id)
+          if (result.error) {
+            res.status(500).json({ message: result.message })
+            return
+          }
+        }
+      }
+
+      // Xóa Film khỏi cơ sở dữ liệu
+      await film.remove()
+
+      res.json({ message: 'Film đã được xóa thành công' })
+    } catch (error) {
+      console.error('Lỗi khi xóa Film:', error)
+      res.status(500).json({ message: 'Lỗi khi xóa Film' })
     }
   }
 }

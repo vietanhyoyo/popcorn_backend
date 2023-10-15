@@ -7,6 +7,7 @@ route.post('/add', filmController.addFilm)
 route.get('/slug', filmController.getFilmBySlug)
 route.get('/search', filmController.getSearchFilm)
 route.post('/update/:id', filmController.updateFilm)
+route.post('/delete/:id', filmController.deleteFilm)
 route.get('/', filmController.getFilmList)
 
 module.exports = route

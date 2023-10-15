@@ -93,33 +93,39 @@ class SeasonController {
     const seasonId = req.params.id // Lấy ID của Season từ URL
 
     try {
-      // Tìm Season dựa vào ID
-      const season = await Season.findById(seasonId)
+      const result = await new SeasonController().deleteSeasonClean(seasonId)
 
-      if (!season) {
-        return res.status(404).json({ message: 'Không tìm thấy Season' })
+      if (result.error) {
+        res.status(500).json({ message: result.message })
+        return
       }
-
-      // Xóa các Episode có season_id tương ứng với ID của Season
-      const episodes = await Episode.find({ season_id: season.id })
-      console.log(episodes);
-      for (var epi of episodes) {
-        console.log(epi)
-        const result = await episodeController.deleteEpisodeAndSoundTrack(epi._id)
-        if(result.error){
-          res.status(404).json({ message: result.message })
-          return;
-        }
-      }
-
-      // Xóa Season khỏi cơ sở dữ liệu
-      await season.remove()
 
       res.json({ message: 'Season và các Episode đã được xóa thành công' })
     } catch (error) {
-      console.error('Lỗi khi xóa Season và các Episode:', error)
       res.status(500).json({ message: 'Lỗi khi xóa Season và các Episode' })
     }
+  }
+
+  async deleteSeasonClean(season_id) {
+    // Tìm Season dựa vào ID
+    const season = await Season.findById(season_id)
+    if (!season) {
+      return { message: 'Không tìm thấy Season', error: true }
+    }
+
+    // Xóa các Episode có season_id tương ứng với ID của Season
+    const episodes = await Episode.find({ season_id: season.id })
+    for (var epi of episodes) {
+      const result = await episodeController.deleteEpisodeAndSoundTrack(epi._id)
+      if (result.error) {
+        return { message: result.message, error: true }
+      }
+    }
+
+    // Xóa Season khỏi cơ sở dữ liệu
+    await season.remove()
+
+    return { message: 'Xóa season thành công!', error: false }
   }
 }
 
