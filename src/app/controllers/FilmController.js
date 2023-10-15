@@ -47,9 +47,10 @@ class FilmController {
             $options: 'i'
           },
           ...filter
-        })
+        }).sort({ release_date: -1 })
       } else {
         films = await Film.find(filter)
+          .sort({ release_date: -1 })
           .skip((page - 1) * perPage)
           .limit(perPage)
       }
@@ -262,7 +263,9 @@ class FilmController {
       res.json(newFilms)
     } catch (error) {
       console.error('Lỗi khi lấy danh sách bộ phim phổ biến:', error)
-      res.status(500).json({ message: 'Lỗi khi lấy danh sách bộ phim phổ biến' })
+      res
+        .status(500)
+        .json({ message: 'Lỗi khi lấy danh sách bộ phim phổ biến' })
     }
   }
 }
