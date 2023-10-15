@@ -10,7 +10,7 @@ function route(app) {
     app.use('/episode', episodeRouter);
     app.use('/season', seasonRouter);
     app.use('/soundtrack', soundTrackRouter);
-    app.use('/films', filmRouter);
+    app.use('/film', filmRouter);
     app.use('/convert', convertRouter);
     app.use('/', siteRouter);
 

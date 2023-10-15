@@ -168,72 +168,6 @@ class FilmController {
     }
   }
 
-  async getSearchFilm(req, res) {
-    const searchTerm = req.query.name
-    // Mặc định, nếu không có giá trị cho 'page' thì sẽ sử dụng trang 1
-    const page = parseInt(req.query.page) || 1
-
-    try {
-      // Tính toán tổng số dữ liệu
-      const totalDataCount = await Film.countDocuments({})
-
-      // Tính toán tổng số trang
-      const totalPages = Math.ceil(totalDataCount / perPage)
-
-      // Xác định trang trước và trang tiếp theo
-      const prevPage = page > 1 ? page - 1 : null
-      const nextPage = page < totalPages ? page + 1 : null
-
-      // Truy vấn dữ liệu cho trang hiện tại
-      const films = await Film.find({
-        name: { $regex: searchTerm, $options: 'i' }
-      })
-        .skip((page - 1) * perPage)
-        .limit(perPage)
-
-      // Tạo một mảng các Promise để lấy số lượng soundtrack cho mỗi bộ phim
-      const soundtrackCountsPromises = films.map(async (film) => {
-        const soundtrackCount = await SoundTrack.countDocuments({
-          film_id: film.id
-        })
-        return {
-          film_id: film.id,
-          soundtrack_count: soundtrackCount
-        }
-      })
-
-      // Chờ tất cả các Promise hoàn thành
-      const soundtrackCounts = await Promise.all(soundtrackCountsPromises)
-
-      // Thêm số lượng soundtrack vào thông tin của từng bộ phim
-      const filmsWithSoundtrackCount = films.map((film) => {
-        const matchingSoundtrackCount = soundtrackCounts.find(
-          (item) => item.film_id === film.id
-        )
-        return {
-          ...film.toObject(),
-          soundtrack_count: matchingSoundtrackCount
-            ? matchingSoundtrackCount.soundtrack_count
-            : 0
-        }
-      })
-
-      // Trả về thông tin về trang và dữ liệu
-      res.send({
-        current_page: page,
-        total_pages: totalPages,
-        total: totalDataCount,
-        prev_page: prevPage,
-        next_page: nextPage,
-        per_page: perPage,
-        data: filmsWithSoundtrackCount
-      })
-    } catch (err) {
-      console.error('Lỗi khi truy vấn dữ liệu:', err)
-      res.status(500).send('Lỗi khi truy vấn dữ liệu')
-    }
-  }
-
   async addFilm(req, res) {
     const filmData = req.body // Dữ liệu bộ phim từ request body
 
@@ -290,6 +224,45 @@ class FilmController {
     } catch (error) {
       console.error('Lỗi khi xóa Film:', error)
       res.status(500).json({ message: 'Lỗi khi xóa Film' })
+    }
+  }
+
+  async getBannerFilms(req, res) {
+    try {
+      const bannerFilms = await Film.find({ is_banner: 1 })
+        .sort({ release_date: -1 }) // Sắp xếp theo ngày mới nhất (giảm dần)
+        .limit(5) // Giới hạn kết quả lấy ra 5 bộ phim
+
+      res.json(bannerFilms)
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách bộ phim banner:', error)
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách bộ phim banner' })
+    }
+  }
+
+  async getNewFilms(req, res) {
+    try {
+      const newFilms = await Film.find({ is_new: 1 })
+        .sort({ release_date: -1 })
+        .limit(10) // Giới hạn kết quả lấy ra 10 bộ phim
+
+      res.json(newFilms)
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách bộ phim mới:', error)
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách bộ phim mới' })
+    }
+  }
+
+  async getPopularFilms(req, res) {
+    try {
+      const newFilms = await Film.find({ is_popular: 1 })
+        .sort({ release_date: -1 })
+        .limit(10) // Giới hạn kết quả lấy ra 10 bộ phim
+
+      res.json(newFilms)
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách bộ phim phổ biến:', error)
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách bộ phim phổ biến' })
     }
   }
 }
