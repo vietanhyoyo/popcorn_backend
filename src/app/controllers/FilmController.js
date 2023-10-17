@@ -47,10 +47,9 @@ class FilmController {
             $options: 'i'
           },
           ...filter
-        }).sort({ release_date: -1 })
+        })
       } else {
         films = await Film.find(filter)
-          .sort({ release_date: -1 })
           .skip((page - 1) * perPage)
           .limit(perPage)
       }
