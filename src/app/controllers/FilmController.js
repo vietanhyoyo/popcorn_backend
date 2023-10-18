@@ -111,8 +111,12 @@ class FilmController {
         return res.status(404).send('Không tìm thấy bộ phim với slug tương ứng')
       }
 
+      const soundtrackCount = await SoundTrack.countDocuments({
+        film_id: film.id
+      })
+
       // Trả về thông tin của bộ phim
-      res.send(film)
+      res.send({...film.toObject(), soundtrack_count: soundtrackCount})
     } catch (err) {
       console.error('Lỗi khi tìm kiếm bộ phim:', err)
       res.status(500).send('Lỗi khi truy vấn dữ liệu')

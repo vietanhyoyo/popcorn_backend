@@ -8,9 +8,6 @@ class EpisodeController {
     const filmSlug = req.query.film
     const seasonSlug = req.query.season
 
-    console.log(filmSlug)
-    console.log(seasonSlug)
-
     // Kiểm tra xem filmSlug và seasonSlug có tồn tại và không null
     if (!filmSlug || !seasonSlug) {
       return res
@@ -45,6 +42,18 @@ class EpisodeController {
       })
         .sort({ slug: 1 })
         .exec()
+
+      // Loop through the episodes and count the associated soundtracks
+      for (let i = 0; i < episodes.length; i++) {
+        const soundtrackCount = await SoundTrack.countDocuments({
+          episode_id: episodes[i].id,
+          film_id: film.id
+        })
+        episodes[i] = {
+          ...episodes[i].toObject(),
+          soundtrack_count: soundtrackCount
+        } // Add the count to the episode object
+      }
 
       // Trả về danh sách Episode
       res.send(episodes)
