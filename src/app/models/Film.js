@@ -9,6 +9,7 @@ const Film = new Schema(
     thumbnail: { type: String },
     backdrop: { type: String },
     type: { type: Number },
+    genres: { type: String },
     release_date: { type: Date },
     is_banner: { type: Number },
     is_recent: { type: Number },
