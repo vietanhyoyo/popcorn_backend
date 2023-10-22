@@ -7,6 +7,7 @@ const Film = new Schema(
     slug: { type: String },
     name: { type: String, maxlength: 255 },
     thumbnail: { type: String },
+    banner_image: { type: String },
     backdrop: { type: String },
     type: { type: Number },
     genres: { type: String },

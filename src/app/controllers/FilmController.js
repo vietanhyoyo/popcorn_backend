@@ -47,9 +47,10 @@ class FilmController {
             $options: 'i'
           },
           ...filter
-        })
+        }).sort({ release_date: -1, createdAt: -1 })
       } else {
         films = await Film.find(filter)
+          .sort({ release_date: -1, createdAt: -1 })
           .skip((page - 1) * perPage)
           .limit(perPage)
       }
@@ -116,7 +117,7 @@ class FilmController {
       })
 
       // Trả về thông tin của bộ phim
-      res.send({...film.toObject(), soundtrack_count: soundtrackCount})
+      res.send({ ...film.toObject(), soundtrack_count: soundtrackCount })
     } catch (err) {
       console.error('Lỗi khi tìm kiếm bộ phim:', err)
       res.status(500).send('Lỗi khi truy vấn dữ liệu')
@@ -233,8 +234,8 @@ class FilmController {
 
   async getBannerFilms(req, res) {
     try {
-      const bannerFilms = await Film.find({ is_banner: 1 })
-        .sort({ release_date: -1 }) // Sắp xếp theo ngày mới nhất (giảm dần)
+      const bannerFilms = await Film.find({ is_banner: 1, type: { $ne: 3 } })
+        .sort({ release_date: -1, createdAt: -1 })
         .limit(5) // Giới hạn kết quả lấy ra 5 bộ phim
 
       res.json(bannerFilms)
@@ -246,8 +247,8 @@ class FilmController {
 
   async getNewFilms(req, res) {
     try {
-      const newFilms = await Film.find({ is_new: 1 })
-        .sort({ release_date: -1 })
+      const newFilms = await Film.find({ is_new: 1, type: { $ne: 3 } })
+        .sort({ release_date: -1, createdAt: -1 })
         .limit(10) // Giới hạn kết quả lấy ra 10 bộ phim
 
       res.json(newFilms)
@@ -259,8 +260,8 @@ class FilmController {
 
   async getPopularFilms(req, res) {
     try {
-      const newFilms = await Film.find({ is_popular: 1 })
-        .sort({ release_date: -1 })
+      const newFilms = await Film.find({ is_popular: 1, type: { $ne: 3 } })
+        .sort({ release_date: -1, createdAt: -1 })
         .limit(10) // Giới hạn kết quả lấy ra 10 bộ phim
 
       res.json(newFilms)
